@@ -2,10 +2,12 @@
     "private": true,
     "scripts": {
         "development": "mix",
+        "dev": "min",
         "watch": "mix watch",
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
-        "production": "mix --production"
+        "production": "mix --production",
+        "nova:install": "npm --prefix='vendor/laravel/nova' i"
     },
     "devDependencies": {
         "@vue/compiler-sfc": "^3.2.33",

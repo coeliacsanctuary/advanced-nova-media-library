@@ -2,9 +2,19 @@
   <component :is="field.fullSize ? 'FullWidthField' : 'DefaultField'" :field="field" :errors="errors" :show-help-text="showHelpText">
     <template #field>
       <div :class="{'px-8 pt-6': field.fullSize}">
-        <gallery slot="value" ref="gallery" v-if="hasSetInitialValue"
-                 v-model="value" :editable="!field.readonly" :removable="field.removable" custom-properties :field="field" :multiple="field.multiple" :uploads-to-vapor="field.uploadsToVapor"
-                 :has-error="hasError" :first-error="firstError"/>
+        <gallery slot="value"
+                 ref="gallery"
+                 v-if="hasSetInitialValue"
+                 v-model="value"
+                 :editable="!field.readonly"
+                 :removable="field.removable"
+                 custom-properties
+                 :field="field"
+                 :multiple="field.multiple"
+                 :uploads-to-vapor="field.uploadsToVapor"
+                 :has-error="hasError"
+                 :first-error="firstError"
+        />
 
         <div v-if="field.existingMedia">
           <OutlineButton type="button" class="mt-2" @click.prevent="existingMediaOpen = true">
@@ -89,6 +99,13 @@ export default {
             formData.append(`__media__[${field}][${index}][file_name]`, file.vaporFile.filename);
             formData.append(`__media__[${field}][${index}][file_size]`, file.vaporFile.file_size);
             formData.append(`__media__[${field}][${index}][mime_type]`, file.vaporFile.mime_type);
+          } else if (file.isUploaded) {
+            formData.append(`__media__[${field}][${index}][is_uploaded]`, true);
+            formData.append(`__media__[${field}][${index}][key]`, file.uploadedFile.key);
+            formData.append(`__media__[${field}][${index}][uuid]`, file.uploadedFile.uuid);
+            formData.append(`__media__[${field}][${index}][file_name]`, file.uploadedFile.filename);
+            formData.append(`__media__[${field}][${index}][file_size]`, file.uploadedFile.file_size);
+            formData.append(`__media__[${field}][${index}][mime_type]`, file.uploadedFile.mime_type);
           } else {
             formData.append(`__media__[${field}][${index}]`, file.file, file.name);
           }

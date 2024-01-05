@@ -1,8 +1,9 @@
 <?php
 
-namespace Ebess\AdvancedNovaMediaLibrary\Fields;
+namespace Jpeters8889\AdvancedNovaMediaLibrary\Fields;
 
 use Illuminate\Support\Carbon;
+use Jpeters8889\AdvancedNovaMediaLibrary\Contracts\GetUploadedMediaContract;
 use Laravel\Nova\Fields\Field;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Collection;
@@ -227,7 +228,13 @@ class Media extends Field
                     $fileName = $file->getClientOriginalName();
                     $fileExtension = $file->getClientOriginalExtension();
 
+                } else if(isset($file['is_uploaded']) && $file['is_uploaded'] === "true") {
+                    $media = $this->makeMediaFromCustomUpload($file, $model);
+
+                    $fileName = $file['file_name'];
+                    $fileExtension = pathinfo($file['file_name'], PATHINFO_EXTENSION);
                 } else {
+                    dump($file);
                     $media = $this->makeMediaFromVaporUpload($file, $model);
 
                     $fileName = $file['file_name'];
@@ -392,5 +399,15 @@ class Media extends Field
 
         return $model->addMediaFromUrl($url)
             ->usingFilename($file['file_name']);
+    }
+
+    private function makeMediaFromCustomUpload(array $file, HasMedia $model): FileAdder
+    {
+        /** @var class-string<GetUploadedMediaContract> $action */
+        $action = config('nova-media-library.get-uploaded-media-using');
+
+        $url = (new $action())->resolveFromUuid($file['uuid']);
+
+        return $model->addMediaFromUrl($url)->usingFilename($file['file_name']);
     }
 }

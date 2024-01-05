@@ -61,7 +61,7 @@ public function registerMediaCollections(): void
 In order to be able to upload and handle generic files just go ahead and use the `Files` field.
 
 ```php
-use Ebess\AdvancedNovaMediaLibrary\Fields\Files;
+use Jpeters8889\AdvancedNovaMediaLibrary\Fields\Files;
 
 Files::make('Single file', 'one_file'),
 Files::make('Multiple files', 'multiple_files'),
@@ -72,7 +72,7 @@ Files::make('Multiple files', 'multiple_files'),
 ![Single image upload](https://raw.githubusercontent.com/ebess/advanced-nova-media-library/master/docs/single-image.png)
 
 ```php
-use Ebess\AdvancedNovaMediaLibrary\Fields\Images;
+use Jpeters8889\AdvancedNovaMediaLibrary\Fields\Images;
 
 public function fields(Request $request)
 {
@@ -91,7 +91,7 @@ If you enable the multiple upload ability, you can **order the images via drag &
 ![Multiple image upload](https://raw.githubusercontent.com/ebess/advanced-nova-media-library/master/docs/multiple-images.png)
 
 ```php
-use Ebess\AdvancedNovaMediaLibrary\Fields\Images;
+use Jpeters8889\AdvancedNovaMediaLibrary\Fields\Images;
 
 public function fields(Request $request)
 {
@@ -258,7 +258,7 @@ Images::make('Gallery')
 In order to handle videos with thumbnails you need to use the `Media` field instead of `Images`. This way you are able to upload videos as well.
 
 ```php
-use Ebess\AdvancedNovaMediaLibrary\Fields\Media;
+use Jpeters8889\AdvancedNovaMediaLibrary\Fields\Media;
 
 class Category extends Resource
 {

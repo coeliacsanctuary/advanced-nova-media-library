@@ -1,11 +1,11 @@
 <?php
 
-namespace Ebess\AdvancedNovaMediaLibrary\Fields;
+namespace Jpeters8889\AdvancedNovaMediaLibrary\Fields;
 
 /**
  * Class Files
  *
- * @package Ebess\AdvancedNovaMediaLibrary\Fields
+ * @package Jpeters8889\AdvancedNovaMediaLibrary\Fields
  */
 class Files extends Images
 {

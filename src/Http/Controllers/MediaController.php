@@ -1,9 +1,9 @@
 <?php
 
-namespace Ebess\AdvancedNovaMediaLibrary\Http\Controllers;
+namespace Jpeters8889\AdvancedNovaMediaLibrary\Http\Controllers;
 
-use Ebess\AdvancedNovaMediaLibrary\Http\Requests\MediaRequest;
-use Ebess\AdvancedNovaMediaLibrary\Http\Resources\MediaResource;
+use Jpeters8889\AdvancedNovaMediaLibrary\Http\Requests\MediaRequest;
+use Jpeters8889\AdvancedNovaMediaLibrary\Http\Resources\MediaResource;
 use Exception;
 
 class MediaController extends Controller
@@ -37,12 +37,12 @@ class MediaController extends Controller
 
             $query->latest();
         }
-        
+
         if (!empty($hideCollections)) {
             if (!is_array($hideCollections)) {
                 $hideCollections = [ $hideCollections ];
             }
-            
+
             $query->whereNotIn('collection_name', $hideCollections);
         }
 

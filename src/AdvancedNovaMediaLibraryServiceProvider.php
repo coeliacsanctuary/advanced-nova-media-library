@@ -1,6 +1,6 @@
 <?php
 
-namespace Ebess\AdvancedNovaMediaLibrary;
+namespace Jpeters8889\AdvancedNovaMediaLibrary;
 
 use Illuminate\Support\Facades\Route;
 use Laravel\Nova\Nova;
@@ -31,7 +31,7 @@ class AdvancedNovaMediaLibraryServiceProvider extends ServiceProvider
         }
 
         Route::middleware(['nova'])
-            ->prefix('nova-vendor/ebess/advanced-nova-media-library')
+            ->prefix('nova-vendor/jpeters8889/advanced-nova-media-library')
             ->group(__DIR__.'/../routes/api.php');
     }
 }

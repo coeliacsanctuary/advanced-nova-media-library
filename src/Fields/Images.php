@@ -1,17 +1,10 @@
 <?php
 
-namespace Ebess\AdvancedNovaMediaLibrary\Fields;
+namespace Jpeters8889\AdvancedNovaMediaLibrary\Fields;
 
 class Images extends Media
 {
     protected $defaultValidatorRules = ['image'];
-
-    public function __construct($name, $attribute = null, callable $resolveCallback = null)
-    {
-        parent::__construct($name, $attribute, $resolveCallback);
-
-        $this->croppable(config('nova-media-library.default-croppable', true));
-    }
 
     /**
      * Do we deprecate this for SingleMediaRules?
@@ -25,28 +18,20 @@ class Images extends Media
         return $this;
     }
 
-    public function croppable(bool $croppable): self
+    public function addButtonLabel(string $label): self
     {
-        return $this->withMeta(compact('croppable'));
+        return $this->withMeta(['addLabel' => $label]);
     }
 
-    public function croppingConfigs(array $configs): self
+    public function insertable(string $field = 'body'): self
     {
-        return $this->withMeta(['croppingConfigs' => $configs]);
+        $this->mustUpload(true);
+
+        return $this->withMeta(['insertable' => $field]);
     }
 
-    public function showStatistics(bool $showStatistics = true): self
+    public function mustUpload(bool $mustUpload): self
     {
-        return $this->withMeta(compact('showStatistics'));
-    }
-
-    public function showDimensions(bool $showDimensions = true): self
-    {
-        return $this->showStatistics();
-    }
-
-    public function mustCrop(bool $mustCrop = true): self
-    {
-        return $this->withMeta(['mustCrop' => $mustCrop]);
+        return $this->withMeta(['mustUpload' => $mustUpload]);
     }
 }

@@ -4,7 +4,7 @@ namespace Jpeters8889\AdvancedNovaMediaLibrary\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class MediaRequest extends FormRequest
+class UploadFileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,9 +23,7 @@ class MediaRequest extends FormRequest
     public function rules()
     {
         return [
-            'search_text' => 'sometimes|nullable|string',
-            'page' => 'sometimes|nullable|numeric',
-            'per_page' => 'sometimes|nullable|numeric'
+            'image' => ['file', 'image', 'mimetypes:image/jpg,image/jpeg,image/png,image/gif']
         ];
     }
 }

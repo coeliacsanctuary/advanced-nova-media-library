@@ -1,6 +1,6 @@
 <?php
 
-namespace Ebess\AdvancedNovaMediaLibrary\Fields;
+namespace Jpeters8889\AdvancedNovaMediaLibrary\Fields;
 
 /**
  * @mixin Media

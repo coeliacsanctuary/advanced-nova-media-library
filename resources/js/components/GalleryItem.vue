@@ -11,13 +11,15 @@
 </script>
 
 <style lang="scss">
-  $bg-color: #e8f5fb;
+  $bg-color: rgba(var(--colors-gray-100));
+  $bg-color-dark: rgba(var(--colors-gray-900));
+
   $border-radius: 10px;
 
   .gallery {
     &.editable {
       .gallery-item {
-        cursor: grab;
+        cursor: zoom-in;
       }
     }
 
@@ -32,9 +34,17 @@
 
       .gallery-item-info {
         display: flex;
-        background-color: transparentize($bg-color, .2);
+        background-color: $bg-color;
         border-radius: $border-radius;
         z-index: 10;
+      }
+    }
+  }
+
+  .dark {
+    .gallery {
+      .gallery-item {
+        background-color: $bg-color-dark;
       }
     }
   }
