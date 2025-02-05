@@ -47,7 +47,8 @@
 
       <ModalFooter>
         <div class="ml-auto">
-          <LinkButton
+          <Button
+            variant="link"
             type="button"
             data-testid="cancel-button"
             dusk="cancel-delete-button"
@@ -55,11 +56,11 @@
             class="mr-3"
           >
             Cancel
-          </LinkButton>
+          </Button>
 
-          <DefaultButton type="submit">
+          <Button type="submit">
             Insert
-          </DefaultButton>
+          </Button>
         </div>
       </ModalFooter>
     </form>
@@ -67,7 +68,12 @@
 </template>
 
 <script>
+import { Button } from 'laravel-nova-ui'
+
 export default {
+  components: {
+    Button,
+  },
   props: {
     show: {
       required: true,

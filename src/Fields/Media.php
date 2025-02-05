@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\FileAdder;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaModel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Media extends Field
@@ -77,7 +78,7 @@ class Media extends Field
      *
      * @return $this
      */
-    public function withResponsiveImages($responsive = true)
+    public function withResponsiveImages($responsive = true): self
     {
         $this->responsive = $responsive;
 
@@ -91,7 +92,7 @@ class Media extends Field
      *
      * @return $this
      */
-    public function setFileName($callback)
+    public function setFileName($callback): self
     {
         $this->setFileNameCallback = $callback;
 
@@ -105,7 +106,7 @@ class Media extends Field
      *
      * @return $this
      */
-    public function setName($callback)
+    public function setName($callback): self
     {
         $this->setNameCallback = $callback;
 
@@ -119,7 +120,7 @@ class Media extends Field
      *
      * @return $this
      */
-    public function setMaxFileSize(int $maxSize)
+    public function setMaxFileSize(int $maxSize): self
     {
         return $this->withMeta(['maxFileSize' => $maxSize]);
     }
@@ -132,7 +133,7 @@ class Media extends Field
      *
      * @return $this
      */
-    public function setAllowedFileTypes(array $types)
+    public function setAllowedFileTypes(array $types): self
     {
         return $this->withMeta(['allowedFileTypes' => $types]);
     }
@@ -144,7 +145,7 @@ class Media extends Field
      *
      * @return $this
      */
-    public function temporary(Carbon $until)
+    public function temporary(Carbon $until): self
     {
         $this->secureUntil = $until;
 
@@ -160,11 +161,12 @@ class Media extends Field
      * @param HasMedia $model
      * @param mixed $requestAttribute
      * @param mixed $attribute
+     * @return mixed
      */
     protected function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute)
     {
-        $attr = $request['__media__'] ?? [];
-        $data = $attr[$requestAttribute] ?? [];
+        $key = str_replace($attribute, '__media__.'.$attribute, $requestAttribute);
+        $data = $request[$key] ?? [];
 
         if ($attribute === 'ComputedField') {
             $attribute = call_user_func($this->computedCallback, $model);
@@ -191,29 +193,29 @@ class Media extends Field
         Validator::make($requestToValidateCollectionMedia, [$requestAttribute => $this->collectionMediaRules])
             ->validate();
 
-        return function () use ($request, $data, $attribute, $model) {
-            $this->handleMedia($request, $model, $attribute, $data);
+        return function () use ($request, $data, $attribute, $model, $requestAttribute) {
+            $this->handleMedia($request, $model, $attribute, $data, $requestAttribute);
 
             // fill custom properties for existing media
-            $this->fillCustomPropertiesFromRequest($request, $model, $attribute);
+            $this->fillCustomPropertiesFromRequest($request, $requestAttribute, $model, $attribute);
         };
     }
 
-    protected function handleMedia(NovaRequest $request, $model, $attribute, $data)
+    protected function handleMedia(NovaRequest $request, $model, $attribute, $data, $requestAttribute): void
     {
         $remainingIds = $this->removeDeletedMedia($data, $model->getMedia($attribute));
-        $newIds = $this->addNewMedia($request, $data, $model, $attribute);
-        $existingIds = $this->addExistingMedia($request, $data, $model, $attribute, $model->getMedia($attribute));
+        $newIds = $this->addNewMedia($request, $data, $model, $attribute, $requestAttribute);
+        $existingIds = $this->addExistingMedia($request, $data, $model, $attribute, $model->getMedia($attribute), $requestAttribute);
         $this->setOrder($remainingIds->union($newIds)->union($existingIds)->sortKeys()->all());
     }
 
-    private function setOrder($ids)
+    private function setOrder($ids): void
     {
         $mediaClass = config('media-library.media_model');
         $mediaClass::setNewOrder($ids);
     }
 
-    private function addNewMedia(NovaRequest $request, $data, HasMedia $model, string $collection): Collection
+    private function addNewMedia(NovaRequest $request, $data, HasMedia $model, string $collection, string $requestAttribute): Collection
     {
 
         return collect($data)
@@ -221,7 +223,7 @@ class Media extends Field
                 // New files will come in as UploadedFile objects,
                 // whereas Vapor-uploaded files will come in as arrays.
                 return $value instanceof UploadedFile || is_array($value);
-            })->map(function ($file, int $index) use ($request, $model, $collection) {
+            })->map(function ($file, int $index) use ($request, $model, $collection, $requestAttribute) {
                 if ($file instanceof UploadedFile) {
                     $media = $model->addMedia($file)->withCustomProperties($this->customProperties);
 
@@ -234,7 +236,6 @@ class Media extends Field
                     $fileName = $file['file_name'];
                     $fileExtension = pathinfo($file['file_name'], PATHINFO_EXTENSION);
                 } else {
-                    dump($file);
                     $media = $this->makeMediaFromVaporUpload($file, $model);
 
                     $fileName = $file['file_name'];
@@ -264,7 +265,7 @@ class Media extends Field
                 $media = $media->toMediaCollection($collection);
 
                 // fill custom properties for recently created media
-                $this->fillMediaCustomPropertiesFromRequest($request, $media, $index, $collection);
+                $this->fillMediaCustomPropertiesFromRequest($request, $media, $index, $collection, $requestAttribute);
 
                 return $media->getKey();
             });
@@ -280,7 +281,7 @@ class Media extends Field
         });
 
         $medias->pluck('id')->diff($remainingIds)->each(function ($id) use ($medias) {
-            /** @var Media $media */
+            /** @var MediaModel $media */
             if ($media = $medias->where('id', $id)->first()) {
                 $media->delete();
             }
@@ -290,10 +291,10 @@ class Media extends Field
     }
 
     /**
-     * @param HasMedia|HasMediaTrait $resource
+     * @param HasMedia|InteractsWithMedia $resource
      * @param null $attribute
      */
-    public function resolve($resource, $attribute = null)
+    public function resolve($resource, $attribute = null): void
     {
         $collectionName = $attribute ?? $this->attribute;
 
@@ -302,7 +303,7 @@ class Media extends Field
         }
 
         $this->value = $resource->getMedia($collectionName)
-            ->map(function (\Spatie\MediaLibrary\MediaCollections\Models\Media $media) {
+            ->map(function (MediaModel $media) {
                 return array_merge($this->serializeMedia($media), ['__media_urls__' => $this->getMediaUrls($media)]);
             })->values();
 
@@ -316,7 +317,7 @@ class Media extends Field
      *
      * @return array
      */
-    public function getMediaUrls($media)
+    public function getMediaUrls($media): array
     {
         if (isset($this->secureUntil) && $this->secureUntil instanceof Carbon) {
             return $this->getTemporaryConversionUrls($media);
@@ -326,11 +327,12 @@ class Media extends Field
     }
 
     /**
-     * @param HasMedia|HasMediaTrait $resource
+     * @param HasMedia|InteractsWithMedia $resource
      */
     protected function checkCollectionIsMultiple(HasMedia $resource, string $collectionName)
     {
         $resource->registerMediaCollections();
+
         $isSingle = collect($resource->mediaCollections)
                 ->where('name', $collectionName)
                 ->first()
@@ -339,7 +341,7 @@ class Media extends Field
         $this->withMeta(['multiple' => ! $isSingle]);
     }
 
-    public function serializeMedia(\Spatie\MediaLibrary\MediaCollections\Models\Media $media): array
+    public function serializeMedia(MediaModel $media): array
     {
         if ($this->serializeMediaCallback) {
             return call_user_func($this->serializeMediaCallback, $media);

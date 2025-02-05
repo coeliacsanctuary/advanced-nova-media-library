@@ -3,15 +3,15 @@
     <div class="gallery-item-info">
       <div class="icons p-3">
         <a v-if="insertable" class="icon insertable" title="Insert" @click="showInsertImage = true">
-          <Icon type="plus" view-box="0 0 20 22" width="24" height="24"/>
+          <Icon name="plus" view-box="0 0 20 22" width="24" height="24"/>
         </a>
         <a v-if="removable" class="icon delete" href="#" @click.prevent="$emit('remove')" title="Remove">
-          <Icon type="trash" view-box="0 0 20 20" width="24" height="24"/>
+          <Icon name="trash" view-box="0 0 20 20" width="24" height="24"/>
         </a>
       </div>
 
       <a class="preview" href="#" @click.prevent="showPreview">
-        <Icon type="search" view-box="0 0 20 20" width="30" height="30"/>
+        <Icon name="magnifying-glass" view-box="0 0 20 20" width="30" height="30"/>
       </a>
 
       <span v-text="image.name" class="absolute bg-primary-500 bottom-0 px-2 text-center w-full filename overflow-hidden" />
@@ -45,14 +45,14 @@
 </template>
 
 <script>
-import ScissorsIcon from './icons/Scissors';
+import { Icon } from 'laravel-nova-ui'
 import GalleryItem from './GalleryItem';
 import InsertImageModal from "./InsertImageModal";
 
 export default {
   components: {
     InsertImageModal,
-    ScissorsIcon,
+    Icon,
     GalleryItem,
   },
   mounted() {
@@ -77,7 +77,7 @@ export default {
         return false;
       }
 
-      return this.image.id ? `/nova-vendor/ebess/advanced-nova-media-library/download/${this.image.id}` : null;
+      return this.image.id ? `/nova-vendor/ebess/advanced-nova-media-library/download/${this.image.id}?uuid=${this.image.uuid}` : null;
     },
 
     insertable() {
@@ -283,7 +283,7 @@ $item-multiple-max-height: 100px;
       }
 
       .preview {
-        color: var(--colors-black);
+        color: rgb(var(--colors-primary-500));
         cursor: zoom-in;
       }
 
@@ -341,7 +341,7 @@ $item-multiple-max-height: 100px;
   }
 
   .edit {
-    right: 30px;
+    left: 10px;
   }
 
   .download {

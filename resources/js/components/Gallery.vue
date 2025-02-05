@@ -1,5 +1,5 @@
 <template>
-  <div class="gallery" :class="{editable, multiple}" @mouseover="mouseOver = true" @mouseout="mouseOver = false">
+  <div class="gallery" :class="{editable}" @mouseover="mouseOver = true" @mouseout="mouseOver = false">
     <cropper
       v-if="field.type === 'media' && editable"
       :image="cropImage"
@@ -9,15 +9,9 @@
       :configs="field.croppingConfigs"
     />
 
-    <template v-if="draggable"
-
-    ></template>
-
-    <div v-if="images.length > 0"
-         class="gallery-list clearfix gap-2 mb-2">
-
-      <template v-for="(element, index) in images">
-        <div style="float:left;">
+    <div v-if="images.length > 0" class="gallery-list clearfix gap-2 mb-2">
+    <template v-for="(element, index) in images">
+        <div style="float:left; margin-right: 1em;">
           <component :is="singleComponent" class="mb-3 p-3 mr-3"
                      :key="index" :image="element" :field="field" :editable="editable"
                      :removable="removable || editable" @remove="remove(index)"
@@ -34,19 +28,20 @@
           />
         </div>
       </template>
-
     </div>
+    <br style="clear: both" />
 
-    <span v-else-if="!editable" class="mr-3">&mdash;</span>
-
-    <span v-if="editable" class="form-file">
+    <span v-if="editable" class="">
       <input :id="`__media__${field.attribute}`" :multiple="multiple" ref="file" class="form-file-input" type="file"
              :disabled="uploading" @change="add"/>
       <label :for="`__media__${field.attribute}`" class="">
-        <DefaultButton type="button" @click.prevent="focusFileInput">
-          <template v-if="uploading">{{ __('Uploading') }} ({{ uploadProgress }}%)</template>
-          <template v-else>{{ label }}</template>
-        </DefaultButton>
+        <Button
+          variant="solid"
+          @click.prevent="focusFileInput"
+          :icon="uploading ? 'arrows-up-down' : 'plus'"
+          :disabled="uploading"
+          :label="uploading ? __('Uploading') + ' (' + uploadProgress + '%)' : label"
+        />
       </label>
     </span>
 
@@ -68,6 +63,7 @@ import SingleFile from './SingleFile';
 import Cropper from './Cropper';
 import CustomProperties from './CustomProperties';
 import Draggable from 'vuedraggable';
+import { Button } from 'laravel-nova-ui'
 
 export default {
   components: {
@@ -76,6 +72,7 @@ export default {
     SingleFile,
     CustomProperties,
     Cropper,
+    Button,
   },
 
   props: {
