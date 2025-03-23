@@ -1,10 +1,5 @@
 {
-    "name": "jpeters8889/advanced-nova-media-library",
-    "description": "Laravel Nova tools for managing the Spatie media library.",
-    "keywords": [
-        "laravel",
-        "nova"
-    ],
+    "name": "coeliacsanctuary/advanced-nova-media-library",
     "license": "MIT",
     "require": {
         "php": ">=8.1",
