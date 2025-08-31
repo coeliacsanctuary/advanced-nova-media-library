@@ -5,6 +5,7 @@ namespace Jpeters8889\AdvancedNovaMediaLibrary\Fields;
 use Illuminate\Support\Carbon;
 use Jpeters8889\AdvancedNovaMediaLibrary\Contracts\GetUploadedMediaContract;
 use Laravel\Nova\Fields\Field;
+use Laravel\Nova\Fields\SupportsDependentFields;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Validation\Rule;
@@ -18,7 +19,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Media extends Field
 {
-    use HandlesCustomPropertiesTrait, HandlesConversionsTrait, HandlesExistingMediaTrait;
+    use HandlesCustomPropertiesTrait;
+    use HandlesConversionsTrait;
+    use HandlesExistingMediaTrait;
+    use SupportsDependentFields;
 
     public $component = 'advanced-media-library-field';
 

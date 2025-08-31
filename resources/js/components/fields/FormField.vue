@@ -1,22 +1,22 @@
 <template>
-  <component :is="field.fullSize ? 'FullWidthField' : 'DefaultField'" :field="field" :errors="errors" :show-help-text="showHelpText">
+  <component :is="currentField.fullSize ? 'FullWidthField' : 'DefaultField'" :field="currentField" :errors="errors" :show-help-text="showHelpText">
     <template #field>
-      <div :class="{'px-8 pt-6': field.fullSize}">
+      <div :class="{'px-8 pt-6': currentField.fullSize}">
         <gallery slot="value"
                  ref="gallery"
                  v-if="hasSetInitialValue"
                  v-model="value"
-                 :editable="!field.readonly"
-                 :removable="field.removable"
+                 :editable="!currentField.readonly"
+                 :removable="currentField.removable"
                  custom-properties
-                 :field="field"
-                 :multiple="field.multiple"
-                 :uploads-to-vapor="field.uploadsToVapor"
+                 :field="currentField"
+                 :multiple="currentField.multiple"
+                 :uploads-to-vapor="currentField.uploadsToVapor"
                  :has-error="hasError"
                  :first-error="firstError"
         />
 
-        <div v-if="field.existingMedia">
+        <div v-if="currentField.existingMedia">
           <Button
             class="mt-2"
             icon="arrows-pointing-out"
@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import {FormField, HandlesValidationErrors} from 'laravel-nova';
+import {DependentFormField, HandlesValidationErrors} from 'laravel-nova';
 import Gallery from '../Gallery';
 import FullWidthField from '../FullWidthField';
 import ExistingMedia from '../ExistingMedia';
@@ -46,7 +46,7 @@ import get from 'lodash/get';
 import {Button} from "laravel-nova-ui";
 
 export default {
-  mixins: [FormField, HandlesValidationErrors],
+  mixins: [DependentFormField, HandlesValidationErrors],
   components: {
     Gallery,
     FullWidthField,
@@ -62,9 +62,9 @@ export default {
   },
   computed: {
     openExistingMediaLabel() {
-      const type = this.field.type === 'media' ? 'Media' : 'File';
+      const type = this.currentField.type === 'media' ? 'Media' : 'File';
 
-      if (this.field.multiple || this.value.length === 0) {
+      if (this.currentField.multiple || this.value.length === 0) {
         return this.__(`Add Existing ${type}`);
       }
 
@@ -76,9 +76,9 @@ export default {
      * Set the initial, internal value for the field.
      */
     setInitialValue() {
-      let value = this.field.value || [];
+      let value = this.currentField.value || [];
 
-      if (!this.field.multiple) {
+      if (!this.currentField.multiple) {
         value = value.slice(0, 1);
       }
 
@@ -90,7 +90,7 @@ export default {
      * Fill the given FormData object with the field's internal value.
      */
     fill(formData) {
-      const field = this.field.attribute;
+      const field = this.currentField.attribute;
       this.value.forEach((file, index) => {
         const isNewImage = !file.id;
 
@@ -125,7 +125,7 @@ export default {
     },
 
     getImageCustomProperties(image) {
-      return (this.field.customPropertiesFields || []).reduce((properties, {attribute: property}) => {
+      return (this.currentField.customPropertiesFields || []).reduce((properties, {attribute: property}) => {
         properties[property] = get(image, `custom_properties.${property}`);
 
         // Fixes checkbox problem
@@ -149,7 +149,7 @@ export default {
       // https://github.com/vuejs/vue/issues/2164
       let copiedArray = this.value.slice(0)
 
-      if (!this.field.multiple) {
+      if (!this.currentField.multiple) {
         copiedArray.splice(0, 1);
       }
 
