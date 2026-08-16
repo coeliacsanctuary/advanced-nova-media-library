@@ -32,6 +32,27 @@
           <div class="flex flex-col md:flex-row" index="0">
             <div class="px-6 md:px-8 mt-2 md:mt-0 w-full md:w-1/5 md:py-5">
               <label for="title-introduction-text-field" class="inline-block pt-2 leading-tight">
+                Width
+              </label>
+            </div>
+            <div class="mt-1 md:mt-0 pb-5 px-6 md:px-8 md:w-4/5 w-full md:py-5">
+              <div class="space-y-1">
+                <select class="w-full form-control form-input form-input-bordered" v-model="width"
+                        @change="dirty = true">
+                  <option value="25">25</option>
+                  <option value="33">33</option>
+                  <option value="50">50</option>
+                  <option value="66">66</option>
+                  <option value="75">75</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col md:flex-row" index="0">
+            <div class="px-6 md:px-8 mt-2 md:mt-0 w-full md:w-1/5 md:py-5">
+              <label for="title-introduction-text-field" class="inline-block pt-2 leading-tight">
                 Description
               </label>
             </div>
@@ -91,31 +112,41 @@ export default {
 
   data: () => ({
     position: 'left',
+    width: '33',
     description: '',
     dirty: false,
   }),
 
   emits: ['close', 'submit'],
 
+  watch: {
+    position(value) {
+      this.width = value === 'fullwidth' ? '100' : '33';
+    }
+  },
+
   methods: {
+    reset() {
+      this.position = 'left';
+      this.width = '33';
+      this.description = '';
+      this.dirty = false;
+    },
+
     warnCloseInsert() {
       if (this.dirty && !confirm('Are you sure you want to cancel?')) {
         return;
       }
 
-      this.position = 'left';
-      this.description = '';
-      this.dirty = false;
+      this.reset();
 
       this.$emit('close');
     },
 
     submit() {
-      this.$emit('submit', {position: this.position, description: this.description});
+      this.$emit('submit', {position: this.position, description: this.description, width: this.width});
 
-      this.position = 'left';
-      this.description = '';
-      this.dirty = false;
+      this.reset();
     }
   }
 }

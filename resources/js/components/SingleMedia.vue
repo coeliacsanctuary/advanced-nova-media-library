@@ -95,12 +95,10 @@ export default {
       this.showInsertImage = false;
     },
 
-    handleInsertImage({position, description}) {
-      console.log({position, description});
-
+    handleInsertImage({position, description, width}) {
       const bodyField = document.getElementById(this.field.insertable);
 
-      const imageHtml = `<article-image src="${this.image.file_name}" title="${description}" position="${position}"></article-image>`;
+      const imageHtml = `<article-image src="${this.image.file_name}" title="${description}" position="${position}" width="${width}"></article-image>`;
 
       const cursorPosition = bodyField.selectionStart;
       const currentValue = bodyField.value;
